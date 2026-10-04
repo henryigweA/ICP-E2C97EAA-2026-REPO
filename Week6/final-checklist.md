@@ -1,12 +1,12 @@
-# Final Submission Checklist
-- [ ] Repo name matches the selection email exactly
-- [ ] Repo is Public
-- [ ] Folders Week1-Week6 exist, each with files
-- [ ] 2+ projects complete (Project 1 + Project 2)
-- [ ] Runbooks present
-- [ ] Tests pass: `bash Week3/tests/test_scripts.sh`
-- [ ] `docker compose -f Week4/docker-compose.yml up -d --build` works from a clean clone
-- [ ] Reliability table in Week5 filled with real results
-- [ ] No secrets or `*.tfstate` in repo or history
-- [ ] LinkedIn post live, tagging @InternCareerPath
-- [ ] Repo link pasted into the portal before 8 Oct
+# Final submission checklist
+
+Done in the repo:
+- [x] One public repo, named with the intern ID
+- [x] Week1 to Week6 folders, each with files
+- [x] Project 1 and Project 2 complete, plus optional CI/CD write-up
+- [x] Runbooks for both projects
+- [x] Tests pass in CI (`Week3/tests/test_scripts.sh`), Compose smoke test passes in CI
+
+Done outside the repo (by hand):
+- [ ] LinkedIn post published, tagging the @InternCareerPath company page
+- [ ] Repo link pasted into the submission portal (due 8 Oct)

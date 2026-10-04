@@ -10,4 +10,4 @@
 
 Note for Windows: `flock` and `find -mtime` need WSL or a full Linux environment. Git Bash lacks `flock`; run the Week2/3 scripts in WSL or any Linux machine/VM.
 
-Issues hit during setup are recorded in the main error log: `Week5/phoenix-capstone-README.md`, section 5.
+Issues hit during setup are in the error log: [Week5/phoenix-capstone-README.md](../Week5/phoenix-capstone-README.md).

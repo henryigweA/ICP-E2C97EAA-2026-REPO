@@ -1,13 +1,12 @@
-# Week 5 - Reliability Testing (Project 2)
+# Week 5: Reliability testing (Project 2)
 
-Run each test, then record the real result in the "Observed" column.
+| # | Test | How | Status |
+|---|---|---|---|
+| 1 | Health endpoint answers through nginx | `curl localhost:8080/health` | Verified automatically on every CI run (`docker-smoke-test`, green) |
+| 2 | API container is not root | `docker compose exec api id -u` | Verified automatically on every CI run |
+| 3 | Stack starts clean from scratch | `docker compose up -d --build` | Verified automatically on every CI run |
+| 4 | Crash recovery | `docker kill <api-container>`; expect `unless-stopped` to restart it | Manual test, not yet run |
+| 5 | API port not exposed on host | `curl localhost:5000/health` should be refused | Manual test, not yet run |
+| 6 | Bad deploy rolls back | break `/health`, run `Week3/deploy.sh bad`; expect rollback and exit 1 | Manual test, not yet run |
 
-| # | Test | Command | Expected | Observed |
-|---|---|---|---|---|
-| 1 | Health endpoint | `curl localhost:8080/health` | HTTP 200 | |
-| 2 | Container crash recovery | `docker kill <api-container>` | Restarted by `restart: unless-stopped`, healthy again | |
-| 3 | Start order | `docker compose down && up -d` | proxy waits for api healthy | |
-| 4 | Not root | `docker compose exec api id` | uid=1001 (appuser) | |
-| 5 | API not exposed directly | `curl localhost:5000/health` | Connection refused | |
-| 6 | Bad deploy rollback | Break `/health`, run `Week3/deploy.sh bad` | Auto rollback, exit 1 | |
-| 7 | Clean rebuild | `docker compose build --no-cache` | Succeeds | |
+Rows 1-3 are proven by the CI workflow itself, not by me running them by hand. Rows 4-6 are the next things to try; they depend on a local Docker setup.

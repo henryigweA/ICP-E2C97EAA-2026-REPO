@@ -4,6 +4,6 @@ I built two things from the project bank: a set of bash scripts for backup, clea
 
 Before that I'd already taken the same API to Azure with Terraform and AKS, which taught me more from the ten things that broke than from the parts that worked first time.
 
-Repo: <your GitHub link>
+Repo: https://github.com/henryigweA/ICP-E2C97EAA-2026-REPO
 
 #DevOps #Docker #Bash #InternCareerPath

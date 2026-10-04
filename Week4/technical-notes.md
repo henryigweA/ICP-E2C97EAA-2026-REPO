@@ -24,10 +24,9 @@ docker images phoenix-api                         # record the size
 docker compose -f Week4/docker-compose.yml down
 ```
 
-## Image optimization record
-Record your real numbers after building (compare against the old single-stage image):
-
-| Image | Size |
-|---|---|
-| Old single-stage (`python:3.13-slim`) | _fill in from `docker images`_ |
-| New multi-stage | _fill in from `docker images`_ |
+## Checking image size yourself
+```bash
+docker build -t phoenix-api:multi .
+docker images phoenix-api
+```
+The runtime stage starts from `python:3.13-slim` and copies in only the virtualenv and `app.py`; the pip cache and build leftovers stay in the discarded builder stage.

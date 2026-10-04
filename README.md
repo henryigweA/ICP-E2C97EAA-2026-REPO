@@ -27,11 +27,11 @@ My first Dockerfile worked but was single-stage, ran as root and had no health c
 - has a `HEALTHCHECK` against `/health`
 - ships with a `.dockerignore` so `.git`, `terraform/` and `.env` don't end up in the image
 
-`Week4/docker-compose.yml` runs the API behind nginx. The API port is not published to the host. nginx waits for the API's health check to pass before it starts, and it reaches the API by service name. `Week5/reliability-testing.md` is the failure-test table for it (kill the container, break `/health` and watch the rollback, confirm the process isn't root).
+`Week4/docker-compose.yml` runs the API behind nginx. The API port is not published to the host. nginx waits for the API's health check to pass before it starts, and it reaches the API by service name. `Week5/reliability-testing.md` has the failure-test table: three checks run automatically in CI, three are manual.
 
-## Extra: CI/CD and Azure
+## Extra: the Azure side and CI
 
-Not required for the programme, but it's the part this repo started as. `.github/workflows/deploy.yml` redeploys to AKS on every push to `main`, `terraform/` defines the network, ACR, AKS and monitoring, and `k8s/` holds the manifests. `.github/workflows/ci.yml` runs the Project 1 tests and a Compose smoke test. Details in [Week5/optional-project3-cicd.md](Week5/optional-project3-cicd.md).
+The Terraform, AKS manifests and the deploy pipeline are in my earlier repo, [phoenix-devops-capstone](https://github.com/henryigweA/phoenix-devops-capstone). The build log and error list from that work are in this repo: [Week5/phoenix-capstone-README.md](Week5/phoenix-capstone-README.md). In this repo, `.github/workflows/ci.yml` runs the Project 1 tests and a Compose smoke test (health through nginx, container not root) on every push. More in [Week5/optional-project3-cicd.md](Week5/optional-project3-cicd.md).
 
 ## Layout
 
@@ -40,10 +40,10 @@ Week1/   project selection, environment setup, Linux and Git notes
 Week2/   Project 1 scripts + progress notes
 Week3/   deploy.sh, cron examples, tests, runbook
 Week4/   Compose file, nginx config, technical notes
-Week5/   reliability tests, Docker runbook, CI/CD write-up, Azure build log
+Week5/   reliability test status, Docker runbook, CI/CD write-up, Azure build log
 Week6/   portfolio, final checklist, LinkedIn draft
 app.py, requirements.txt, Dockerfile    the application
-.github/workflows/  terraform/  k8s/    CI/CD and Azure
+.github/workflows/                       CI tests + the unzip/structure workflow
 ```
 
 ## Run it
@@ -58,4 +58,4 @@ Runbooks: [shell scripts](Week3/runbook-shell-automation.md), [Docker Compose](W
 
 ## What's still missing
 
-The API stores everything in memory, so data disappears on restart. The AKS cluster runs one node and one pod to stay inside the free tier, so there's no autoscaling. `deploy.yml` isn't gated on the tests passing yet. And the `cleanup.sh`/`backup.sh` scripts haven't been run on a real production server, only against test directories.
+The API stores everything in memory, so data disappears on restart. The AKS cluster in the earlier repo runs one node and one pod to stay inside the free tier, so there's no autoscaling, and its deploy isn't gated on these tests yet. Three of the reliability tests (crash recovery, closed API port, rollback) are written up but not run by hand; the other three run automatically in CI. And `backup.sh`/`cleanup.sh` have only been run against test directories, not a production server.
