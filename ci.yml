@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  workflow_run:
+    workflows: ["Unzip and structure"]
+    types: [completed]
+  push:
+    paths:
+      - 'Week*/**'
+      - 'Dockerfile'
+      - 'app.py'
+      - 'requirements.txt'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  shell-tests:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Project 1 script tests
+        run: bash Week3/tests/test_scripts.sh
+
+  docker-smoke-test:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start the Compose stack
+        run: docker compose -f Week4/docker-compose.yml up -d --build
+      - name: Wait for /health through nginx
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8080/health; then exit 0; fi
+            sleep 2
+          done
+          docker compose -f Week4/docker-compose.yml logs
+          exit 1
+      - name: Container should not run as root
+        run: test "$(docker compose -f Week4/docker-compose.yml exec -T api id -u)" != "0"
+      - name: Tear down
+        if: always()
+        run: docker compose -f Week4/docker-compose.yml down -v

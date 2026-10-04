@@ -1,0 +1,79 @@
+name: Unzip and structure
+
+# Fires when internship-payload.zip is uploaded to the repo root.
+# Unpacks it into Week1-Week6 + project files, checks the structure,
+# runs the Project 1 tests, commits the result and deletes the zip.
+
+on:
+  push:
+    paths:
+      - 'internship-payload.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Is the zip there?
+        id: zip
+        run: |
+          if [ -f internship-payload.zip ]; then echo "found=true" >> "$GITHUB_OUTPUT"; else echo "found=false" >> "$GITHUB_OUTPUT"; echo "No internship-payload.zip in the repo root; nothing to do."; fi
+
+      - name: Unpack, validate, test
+        if: steps.zip.outputs.found == 'true'
+        run: |
+          set -euo pipefail
+          ZIP=internship-payload.zip
+          tmp="$(mktemp -d)"
+          unzip -q "$ZIP" -d "$tmp"
+
+          # If the zip wraps everything in one folder, step inside it
+          shopt -s dotglob nullglob
+          items=("$tmp"/*)
+          if [ "${#items[@]}" -eq 1 ] && [ -d "${items[0]}" ]; then src="${items[0]}"; else src="$tmp"; fi
+
+          # Keep the original long README as the Azure build log (only on the first run)
+          if [ -f README.md ] && ! grep -q 'icp-structured' README.md && [ "$(wc -l < README.md)" -gt 30 ]; then
+            mkdir -p Week5
+            [ -f Week5/phoenix-capstone-README.md ] || mv README.md Week5/phoenix-capstone-README.md
+          fi
+
+          cp -a "$src"/. .
+
+          # App files: use the fallback only if the repo doesn't already have its own
+          for f in app.py requirements.txt .gitignore; do
+            [ -f "$f" ] || cp "_fallback/$f" "$f"
+          done
+          rm -rf _fallback
+
+          rm -f and                      # stray file from an earlier commit
+          chmod +x Week2/scripts/*.sh Week3/deploy.sh Week3/tests/test_scripts.sh
+
+          # Structure check: fail loudly if anything the PDF asks for is missing
+          missing=0
+          for d in Week1 Week2 Week3 Week4 Week5 Week6; do
+            if [ -z "$(find "$d" -type f 2>/dev/null | head -1)" ]; then echo "::error::$d is missing or empty"; missing=1; fi
+          done
+          for f in README.md Dockerfile app.py requirements.txt Week1/project-selection.md \
+                   Week3/runbook-shell-automation.md Week5/runbook-docker.md Week6/portfolio.md; do
+            [ -f "$f" ] || { echo "::error::missing $f"; missing=1; }
+          done
+          [ "$missing" -eq 0 ] || exit 1
+
+          bash Week3/tests/test_scripts.sh
+
+      - name: Commit the structured repo
+        if: steps.zip.outputs.found == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -q --cached internship-payload.zip || true
+          rm -f internship-payload.zip
+          git add -A
+          git diff --cached --quiet && echo "Nothing to commit" || git commit -m "Restructure into Week1-Week6 per InternCareerPath guidelines"
+          git push
