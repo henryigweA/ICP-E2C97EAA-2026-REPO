@@ -1,0 +1,6 @@
+# Edit with: crontab -e     (minute hour day-of-month month day-of-week command)
+# Nightly backup at 02:00, keep 7 days
+0 2 * * * /path/to/repo/Week2/scripts/backup.sh /var/www/app /var/backups/app 7
+# Weekly cleanup of old logs, Sundays 03:30, delete files older than 30 days
+30 3 * * 0 /path/to/repo/Week2/scripts/cleanup.sh /var/log/myapp 30
+# Check cron's own output: grep CRON /var/log/syslog   |  our logs: ~/devops-logs/*.log

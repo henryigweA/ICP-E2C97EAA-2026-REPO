@@ -1,0 +1,12 @@
+# Final Submission Checklist
+- [ ] Repo name matches the selection email exactly
+- [ ] Repo is Public
+- [ ] Folders Week1-Week6 exist, each with files
+- [ ] 2+ projects complete (Project 1 + Project 2)
+- [ ] Runbooks present
+- [ ] Tests pass: `bash Week3/tests/test_scripts.sh`
+- [ ] `docker compose -f Week4/docker-compose.yml up -d --build` works from a clean clone
+- [ ] Reliability table in Week5 filled with real results
+- [ ] No secrets or `*.tfstate` in repo or history
+- [ ] LinkedIn post live, tagging @InternCareerPath
+- [ ] Repo link pasted into the portal before 8 Oct
